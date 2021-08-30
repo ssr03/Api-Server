@@ -1,0 +1,43 @@
+stages:
+  - Stop the service
+  - Build
+  - deploy
+
+stop:
+  stage: Stop the service
+  only:
+    - master
+  script:
+    - sudo systemctl stop api-server.service
+
+
+build:
+  stage: Build
+  only:
+    - master
+  cache:
+    paths:
+      - build/*
+  script:
+    - gradle bootJar
+
+deploy_staging:
+  stage: deploy
+  only:
+    - master
+  cache:
+    paths:
+      - build/*
+  script:
+    - sudo systemctl start api-server.service
+
+deploy_prod:
+  stage: deploy
+  only:
+    - master
+  cache:
+    paths:
+      - build/*
+  when: manual
+  script:
+    - sudo systemctl start api-server.service
