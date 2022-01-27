@@ -1,16 +1,15 @@
 package framework.apiserver.core.security.user.exception;
 
-import framework.apiserver.core.security.user.exception.UserException;
+import framework.apiserver.core.error.exception.EntityNotFoundException;
+import framework.apiserver.core.error.exception.ErrorCode;
 
-public class UserNotFoundException extends UserException {
-
-    private static final long serialVersionUID = -6641166745915213326L;
-
-    UserNotFoundException(String msg) {
-        super(msg);
-    }
+public class UserNotFoundException extends EntityNotFoundException {
 
     public UserNotFoundException() {
-        super("사용자 목록이 없습니다.");
+        super(ErrorCode.USER_NOT_FOUND);
+    }
+
+    public UserNotFoundException(String target) {
+        super(target, ErrorCode.USER_NOT_FOUND);
     }
 }

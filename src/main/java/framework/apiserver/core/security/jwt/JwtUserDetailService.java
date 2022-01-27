@@ -20,6 +20,6 @@ public class JwtUserDetailService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByLoginId(username)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(()->new UserNotFoundException(username));
     }
 }
