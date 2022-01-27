@@ -1,8 +1,10 @@
 package framework.apiserver.core.security.jwt;
 
 import framework.apiserver.core.security.jwt.dto.TokenDto;
+import framework.apiserver.core.security.jwt.exception.JwtTokenIncorrectException;
+import framework.apiserver.core.security.jwt.exception.JwtTokenInvalidException;
+import framework.apiserver.core.security.jwt.exception.JwtTokenNotFoundException;
 import framework.apiserver.core.security.user.dto.UserDto;
-import framework.apiserver.core.util.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -50,7 +52,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
     public ResponseEntity<TokenDto> reissue(TokenDto tokenDto) {
         // 1.Refresh Token 검증
         if(!jwtTokenProvider.validateToken(tokenDto.getRefreshToken())){
-            throw new RuntimeException("Refresh Token이 유효하지 않습니다.");
+            throw new JwtTokenInvalidException();
         }
 
         // 2. Access Token 에서 loginId 가져오기
@@ -58,11 +60,11 @@ public class JwtAuthServiceImpl implements JwtAuthService {
 
         // 3. 저장소에서 loginId기반으로 Refresh Token값 가져옴
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("로그아웃된 사용자입니다."));
+                .orElseThrow(JwtTokenNotFoundException::new);
 
         // 4. Refresh Token 일치하는지 검사
         if(!refreshToken.getValue().equals(tokenDto.getRefreshToken())){
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            throw new JwtTokenIncorrectException();
         }
 
         // 5. 새로운 토큰 생성
@@ -85,7 +87,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
         try {
             refreshTokenRepository.deleteById(loginId);
         }catch(EmptyResultDataAccessException e){
-            throw new NotFoundException("refresh token이 존재하지 않습니다. 다시 로그인 해주세요");
+            throw new JwtTokenNotFoundException();
         }
     }
 }

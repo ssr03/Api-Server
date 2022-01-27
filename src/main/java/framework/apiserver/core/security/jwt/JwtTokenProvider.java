@@ -1,6 +1,7 @@
 package framework.apiserver.core.security.jwt;
 
 import framework.apiserver.core.security.jwt.dto.TokenDto;
+import framework.apiserver.core.security.jwt.exception.JwtTokenUnauthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,7 @@ public class JwtTokenProvider{
         Claims claims = parseClaims(accessToken);
 
         if(claims.get(AUTHORITIES_KEY) == null){
-            throw new RuntimeException("권한정보가 없는 토큰 입니다");
+            throw new JwtTokenUnauthorizedException();
         }
 
         //클레임에서 권한 정보 가져오기
