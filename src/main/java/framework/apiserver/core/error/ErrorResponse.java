@@ -30,7 +30,7 @@ public class ErrorResponse {
 
     private ErrorResponse(ErrorCode code, String message) {
         this.status = code.getStatus();
-        this.message = (StringUtils.hasText(message) ? message : "" ) + code.getMessage();
+        this.message = (StringUtils.hasText(message) ? message : code.getMessage());
         this.code = code.getCode();
         this.errors = new ArrayList<>();
     }
