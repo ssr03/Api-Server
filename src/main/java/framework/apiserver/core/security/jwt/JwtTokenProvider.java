@@ -4,6 +4,7 @@ import framework.apiserver.core.security.jwt.dto.TokenDto;
 import framework.apiserver.core.security.jwt.exception.JwtTokenUnauthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class JwtTokenProvider{
     private static final long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 60;// 1시간 토근 유지
@@ -31,6 +33,8 @@ public class JwtTokenProvider{
     private String secretKey;
 
     private Key key;
+
+    private final JwtUserDetailService jwtUserDetailService;
 
     @Bean
     public void JwtTokenProvider(){
@@ -69,16 +73,20 @@ public class JwtTokenProvider{
             throw new JwtTokenUnauthorizedException();
         }
 
+        /*
         //클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities
                 = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        //UserDetails객체를 만들어 authentication리턴
-        UserDetails userDetails = new User(claims.getSubject(), "", authorities);
+         UserDetails userDetails = new User(claims.getSubject(), null, authorities);
+         */
 
-        return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), authorities);
+        UserDetails userDetails = jwtUserDetailService.loadUserByUsername(claims.getSubject());
+
+
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
     public Claims parseClaims(String accessToken){
