@@ -1,6 +1,5 @@
 package framework.apiserver.core.security.jwt;
 
-import framework.apiserver.core.security.user.User;
 import framework.apiserver.core.security.user.exception.UserNotFoundException;
 import framework.apiserver.core.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,6 @@ public class JwtUserDetailService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByLoginId(username)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(()->new UserNotFoundException(username));
     }
 }

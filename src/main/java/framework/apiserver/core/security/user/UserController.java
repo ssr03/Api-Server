@@ -1,14 +1,14 @@
 package framework.apiserver.core.security.user;
 
 import framework.apiserver.core.security.jwt.JwtAuthService;
-import framework.apiserver.core.security.user.exception.UserException;
-import framework.apiserver.core.util.Error;
+import framework.apiserver.core.security.role.RoleCd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -23,15 +23,11 @@ public class UserController {
         this.jwtAuthService = jwtAuthService;
     }
 
-    @ExceptionHandler(UserException.class)
-    public ResponseEntity<Error> userNotFound(UserException e) {
-        Error error = new Error(2001, e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
+    @PreAuthorize("hasAuthority('"+ RoleCd.ADMIN_CODE +"')")
     @GetMapping("/id/{id}")
-    public Optional<User> getUser(@PathVariable String id) {
-        return userService.getUser(Long.parseLong(id));
+    public ResponseEntity<User> getUser(@PathVariable String id) {
+        User user = userService.getUser(Long.parseLong(id));
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/logout")
