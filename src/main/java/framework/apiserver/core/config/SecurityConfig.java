@@ -1,5 +1,6 @@
 package framework.apiserver.core.config;
 
+import framework.apiserver.core.security.jwt.JwtFilter;
 import framework.apiserver.core.security.jwt.JwtTokenProvider;
 import framework.apiserver.core.security.jwt.exception.JwtAccessDeniedHandler;
 import framework.apiserver.core.security.jwt.exception.JwtAuthenticationEntryPoint;
@@ -11,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,9 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 @Configuration
-@ComponentScan("framework.apiserver.core.security")
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
+@ComponentScan("framework.apiserver.core.security")
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
     private final Environment environment;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -71,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/mail/**").permitAll()
                 //.antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

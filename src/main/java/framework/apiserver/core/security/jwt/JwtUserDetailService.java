@@ -1,6 +1,5 @@
 package framework.apiserver.core.security.jwt;
 
-import framework.apiserver.core.security.user.User;
 import framework.apiserver.core.security.user.exception.UserNotFoundException;
 import framework.apiserver.core.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
