@@ -1,17 +1,14 @@
 package framework.apiserver.core.security.role;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "a_role")
 @Data
-public class Role {
+public class Role implements GrantedAuthority {
     @Id
     @Column(name = "role_cd")
     private String roleCd;
@@ -23,6 +20,10 @@ public class Role {
     private String roleSelectCd;
 
     @Column(name = "role_dc")
-    @JsonIgnore
     private String roleDc;
+
+    @Override
+    public String getAuthority() {
+        return roleCd;
+    }
 }

@@ -8,6 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 @Data
 @AllArgsConstructor
 public class RoleCd {
-    public static final String ADMIN_CODE = "ADMIN";
-    public static final String USER_CODE = "N_USER";
+    public static final String ADMIN_CODE = "ROLE_ADMIN";
+    public static final String USER_CODE = "ROLE_USER";
 }

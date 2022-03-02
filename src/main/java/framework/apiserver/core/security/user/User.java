@@ -2,7 +2,7 @@ package framework.apiserver.core.security.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import framework.apiserver.core.security.role.UserRole;
+import framework.apiserver.core.security.role.Role;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -15,9 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Entity
@@ -38,9 +38,13 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String loginPw;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    List<UserRole> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="a_user_role",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_cd")
+    )
+    List<Role> roles;
 
     @Column(name = "user_name")
     String username;
@@ -81,8 +85,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRole())));
+        List<GrantedAuthority> authorities = getRoles().stream()
+                .map(Role::getRoleCd)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
         return authorities;
     }
 

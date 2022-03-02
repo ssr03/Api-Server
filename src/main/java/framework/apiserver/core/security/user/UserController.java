@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,7 +23,7 @@ public class UserController {
         this.jwtAuthService = jwtAuthService;
     }
 
-    @PreAuthorize("hasAuthority('"+ RoleCd.ADMIN_CODE +"')")
+    @Secured(RoleCd.ADMIN_CODE)
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
         User user = userService.getUser(Long.parseLong(id));
