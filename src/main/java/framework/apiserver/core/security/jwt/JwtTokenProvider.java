@@ -12,8 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider{
-    private static final long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 60;// 1시간 토근 유지
+    private static final long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 60 * 12;// 1시간 토근 유지
     private static final long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 7;//Refresh Token 7일 유지
     private static final String BEARER_TYPE = "bearer";
     private static final String AUTHORITIES_KEY = "auth";
@@ -33,8 +31,6 @@ public class JwtTokenProvider{
     private String secretKey;
 
     private Key key;
-
-    private final JwtUserDetailService jwtUserDetailService;
 
     @Bean
     public void JwtTokenProvider(){
@@ -73,20 +69,13 @@ public class JwtTokenProvider{
             throw new JwtTokenUnauthorizedException();
         }
 
-        /*
         //클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities
                 = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-         UserDetails userDetails = new User(claims.getSubject(), null, authorities);
-         */
-
-        UserDetails userDetails = jwtUserDetailService.loadUserByUsername(claims.getSubject());
-
-
-        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), "", authorities);
     }
 
     public Claims parseClaims(String accessToken){

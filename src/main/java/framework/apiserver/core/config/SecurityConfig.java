@@ -1,6 +1,5 @@
 package framework.apiserver.core.config;
 
-import framework.apiserver.core.security.jwt.JwtFilter;
 import framework.apiserver.core.security.jwt.JwtTokenProvider;
 import framework.apiserver.core.security.jwt.exception.JwtAccessDeniedHandler;
 import framework.apiserver.core.security.jwt.exception.JwtAuthenticationEntryPoint;
