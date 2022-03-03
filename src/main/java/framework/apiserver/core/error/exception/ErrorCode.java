@@ -31,7 +31,8 @@ public enum ErrorCode {
     FILE_EXCEPTION(HttpStatus.BAD_REQUEST, "F001", "FILE EXCEPTION"),
 
     //USER
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "사용자가 존재하지 않습니다")
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "사용자가 존재하지 않습니다"),
+    USER_EXCEPTION(HttpStatus.BAD_REQUEST, "U002", "사용자 오류")
     ;
 
     private HttpStatus status;

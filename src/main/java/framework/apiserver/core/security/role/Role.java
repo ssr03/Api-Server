@@ -1,5 +1,6 @@
 package framework.apiserver.core.security.role;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -22,6 +23,7 @@ public class Role implements GrantedAuthority {
     @Column(name = "role_dc")
     private String roleDc;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public String getAuthority() {
         return roleCd;

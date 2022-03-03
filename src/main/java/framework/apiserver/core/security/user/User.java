@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -29,9 +30,11 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @NotBlank(message = "loginId is mandatory")
     @Column(name = "login_id")
     String loginId;
 
+    @NotBlank(message = "loginPw is mandatory")
     @Column(name = "login_pw")
     @NotEmpty
     @ToString.Exclude
@@ -46,8 +49,8 @@ public class User implements UserDetails {
     )
     List<Role> roles;
 
-    @Column(name = "user_name")
-    String username;
+    @Column(name = "name")
+    String name;
 
     @Column(name = "enable_flag")
     boolean enableFlag;
@@ -68,7 +71,7 @@ public class User implements UserDetails {
     String attribute5;
 
     @Column(name = "created_by")
-    Long createdBy;
+    String createdBy;
 
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -76,13 +79,14 @@ public class User implements UserDetails {
     LocalDateTime creationDate;
 
     @Column(name = "modified_by")
-    Long modifiedBy;
+    String modifiedBy;
 
     @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "modified_date")
     LocalDateTime modifiedDate;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = getRoles().stream()
@@ -92,11 +96,13 @@ public class User implements UserDetails {
         return authorities;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public String getPassword() {
-        return loginPw;
+        return this.loginPw;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
     public String getUsername() {
         return this.loginId;

@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/api/user")
@@ -23,16 +23,30 @@ public class UserController {
         this.jwtAuthService = jwtAuthService;
     }
 
-    @Secured(RoleCd.ADMIN_CODE)
-    @GetMapping("/id/{id}")
-    public ResponseEntity<User> getUser(@PathVariable String id) {
-        User user = userService.getUser(Long.parseLong(id));
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
     @PostMapping("/logout")
     public ResponseEntity<String> logout(){
         jwtAuthService.logout();
         return new ResponseEntity<>("로그아웃 되었습니다", HttpStatus.OK);
+    }
+
+    @PostAuthorize("returnObject.body.loginId == principal or hasRole('"+RoleCd.ADMIN_CODE+"')")
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = userService.getUser(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostAuthorize("returnObject.body.loginId == principal or hasRole('"+RoleCd.ADMIN_CODE+"')")
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user){
+        User result = userService.update(id, user);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @Secured(RoleCd.ADMIN_CODE)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> deleteUser(@PathVariable Long id){
+        boolean result = userService.delete(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
