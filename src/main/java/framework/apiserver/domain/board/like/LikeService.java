@@ -1,7 +1,10 @@
 package framework.apiserver.domain.board.like;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 public interface LikeService {
-    long pushLike(String boardId);
-    long cancelLike(String boardId);
-    LikeDto getLike(String boardId);
+    Flux<Object> pushLike(String boardId);
+    Flux<Object> cancelLike(String boardId);
+    Mono<LikeDto> getLike(String boardId);
 }

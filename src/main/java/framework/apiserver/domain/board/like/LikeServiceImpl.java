@@ -1,51 +1,53 @@
 package framework.apiserver.domain.board.like;
 
-import framework.apiserver.core.error.exception.EntityNotFoundException;
 import framework.apiserver.core.util.Util;
+import framework.apiserver.domain.board.exception.LikeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.ReactiveRedisOperations;
+import org.springframework.data.redis.core.ReactiveSetOperations;
+
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Set;
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class LikeServiceImpl implements LikeService{
-    private final RedisTemplate<String, String> redisTemplate;
+    private final ReactiveRedisOperations<String, String> redisOperations;
     private final Util util;
 
     @Override
-    public long pushLike(String boardId) {
+    public Flux<Object> pushLike(String boardId) {
         String loginId = util.getLoginId();
+        ReactiveSetOperations<String, String> operations = redisOperations.opsForSet();
 
-        SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        Set<String> likes = setOperations.members(boardId);
-        if(likes.contains(loginId))throw new EntityNotFoundException(loginId + "는 해당 게시물에 이미 좋아요를 눌렀습니다.");
-        long result = setOperations.add(boardId, loginId);
+        return operations
+                .members(boardId).filter(member->loginId.equals(member))
+                .flatMap(s -> Mono.error(new LikeException(loginId + "는 해당 게시물에 이미 좋아요를 눌렀습니다.")))
+                .switchIfEmpty(operations.add(boardId,loginId));
+    }
+
+    @Override
+    public Flux<Object> cancelLike(String boardId) {
+        String loginId = util.getLoginId();
+        ReactiveSetOperations<String, String> operations = redisOperations.opsForSet();
+
+        Flux<Object> result = operations
+                .members(boardId).filter(member->loginId.equals(member))
+                .switchIfEmpty(Mono.error(new LikeException("이미 취소 되었습니다.")))
+                .flatMap(s -> operations.remove(boardId,s));
 
         return result;
     }
 
     @Override
-    public long cancelLike(String boardId) {
+    public Mono<LikeDto> getLike(String boardId) {
         String loginId = util.getLoginId();
-        SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        long result = setOperations.remove(boardId, loginId);
-        return result;
-    }
 
-    @Override
-    public LikeDto getLike(String boardId) {
-        String loginId = util.getLoginId();
-        LikeDto likeDto = new LikeDto();
-        SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        Set<String> likes = setOperations.members(boardId);
-
-        likeDto.setLikeCnt(likes.stream().count());
-        likeDto.setBoardId(boardId);
-        likeDto.setLoginId(loginId);
-        likeDto.setSelected(likes.contains(loginId));
-        return likeDto;
+        return redisOperations.opsForSet().members(boardId)
+                .collectList()
+                .map(list->new LikeDto(boardId, loginId, list.stream().count(), list.contains(loginId)));
     }
 }
