@@ -68,6 +68,12 @@ docker ps
 ./gradlew bootRun
 ```
 
+## Properties
+* application.properties파일 참조
+  * application-local.properties: 로컬 셋팅관련
+  * application-dev.properties: 개발 서버 셋팅 관련
+  * application-prod.properties: 운영 서버 셋팅 관련
+
 ## Project folder structure
 * core패키지: 공통기능(security, file,config등)
     * config: 설정 패키지
@@ -82,15 +88,17 @@ docker ps
 * domain패키지
     * board: 게시판 패키지
       * like: 게시판 좋아요 패키지
-
-## Properties
-* application.properties파일 참조
-  * application-local.properties: 로컬 셋팅관련
-  * application-dev.properties: 개발 서버 셋팅 관련
-  * application-prod.properties: 운영 서버 셋팅 관련
-
+      
 ## Request/Response Flow
 1. request by Controller
 2. Controller call Service interface
 3. ServiceImpl access Repository
 4. parameters transfer by Dto (Controller-Service)
+
+## 로그인 인증이 필요한 경우
+>Postman setting
+![img.png](asset/img.png)
+
+* Authorization 탭
+  * Type: Bearear Token
+  * Token: accessToken 값 입력
