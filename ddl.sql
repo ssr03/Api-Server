@@ -1,6 +1,6 @@
 
 CREATE TABLE `a_board` (
-  `board_id` int(11) NOT NULL AUTO_INCREMENT,
+  `board_id` char(30) NOT NULL,
   `title` varchar(100) DEFAULT NULL,
   `content` varchar(200) DEFAULT NULL,
   `created_by` varchar(30) DEFAULT NULL,
@@ -79,3 +79,14 @@ CREATE TABLE `a_user_role` (
   KEY `A_USER_ROLE_FK` (`user_id`),
   CONSTRAINT `A_USER_ROLE_FK` FOREIGN KEY (`user_id`) REFERENCES `a_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='사용자_권한'
+
+CREATE TABLE `board_seq` (
+                             `next_not_cached_value` bigint(21) NOT NULL,
+                             `minimum_value` bigint(21) NOT NULL,
+                             `maximum_value` bigint(21) NOT NULL,
+                             `start_value` bigint(21) NOT NULL COMMENT 'start value when sequences is created or value if RESTART is used',
+                             `increment` bigint(21) NOT NULL COMMENT 'increment value',
+                             `cache_size` bigint(21) unsigned NOT NULL,
+                             `cycle_option` tinyint(1) unsigned NOT NULL COMMENT '0 if no cycles are allowed, 1 if the sequence should begin a new cycle when maximum_value is passed',
+                             `cycle_count` bigint(21) NOT NULL COMMENT 'How many cycles have been done'
+) ENGINE=InnoDB SEQUENCE=1
