@@ -28,7 +28,6 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService{
     private final Path fileStorageLocation;
     private final Util util;
-    private final FileRepository fileRepository;
 
     @Value("/api/file/")
     private String IMG_API;
@@ -53,10 +52,8 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public List<Ufile> uploadFiles(MultipartFile[] files) {
-        List<Ufile> list = new ArrayList<>();
-
-        String loginId = util.getLoginId();
+    public List<FileDto> uploadFiles(MultipartFile[] files) {
+        List<FileDto> list = new ArrayList<>();
 
         for(MultipartFile file: files){
             String uploadFileName =file.getOriginalFilename();
@@ -98,19 +95,14 @@ public class FileServiceImpl implements FileService{
             /*
              * Insert Data to U_FILE Table
              * */
-            Ufile uf = new Ufile();
-            uf.setOriginalName(fileName);
-            uf.setStoredName(storedName);
-            uf.setFileExt(ext);
-            uf.setFileAmount(fileSize);
-            uf.setThumbnail("thumbnail-" +storedName);
-            uf.setCreatedBy(loginId);
-            uf.setModifiedBy(loginId);
-
-            list.add(uf);
+            FileDto fileDto = new FileDto();
+            fileDto.setFileName(fileName);
+            fileDto.setStoredName(storedName);
+            fileDto.setThumbNail("thumbnail-"+ storedName);
+            fileDto.setExt(ext);
+            fileDto.setFileAmount(fileSize);
+            list.add(fileDto);
         }
-
-        fileRepository.saveAll(list);
 
         return list;
     }
