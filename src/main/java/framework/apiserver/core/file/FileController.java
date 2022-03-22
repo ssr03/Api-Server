@@ -3,17 +3,14 @@ package framework.apiserver.core.file;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -59,11 +56,5 @@ public class FileController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .headers(headers)
                 .body(resource);
-    }
-
-    @PostMapping("/upload")
-    public ResponseEntity<List<Ufile>> uploadFiles(@RequestParam("file") MultipartFile[] files){
-        List<Ufile> list = fileService.uploadFiles(files);
-        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }
