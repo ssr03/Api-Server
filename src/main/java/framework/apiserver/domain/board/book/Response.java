@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.awt.print.Book;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -45,5 +42,6 @@ public class Response{
         String recomauthor;
         String recompublisher;
         String mokchFilePath;
+        String recomisbn;
     }
 }
