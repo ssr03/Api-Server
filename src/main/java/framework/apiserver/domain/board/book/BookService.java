@@ -5,5 +5,5 @@ import java.util.List;
 
 @Transactional
 public interface BookService {
-    List<BookDto> getBookList(int pageNum);
+    List<BookDto> getBookList(int pageNum, int pageSize);
 }
