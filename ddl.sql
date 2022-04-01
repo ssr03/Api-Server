@@ -3,11 +3,14 @@ CREATE TABLE `a_board` (
   `board_id` char(30) NOT NULL,
   `title` varchar(100) DEFAULT NULL,
   `content` varchar(200) DEFAULT NULL,
+  `thumbnail` varchar(50) DEFAULT NULL,
   `created_by` varchar(30) DEFAULT NULL,
   `creation_date` datetime DEFAULT current_timestamp(),
   `modified_by` varchar(30) DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`board_id`)
+  PRIMARY KEY (`board_id`),
+  KEY `a_board_fk` (`created_by`),
+  CONSTRAINT `a_board_fk` FOREIGN KEY (`created_by`) REFERENCES `a_user` (`login_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='게시판'
 
 CREATE TABLE `a_role` (
@@ -77,7 +80,7 @@ CREATE TABLE `a_user_role` (
   `modified_date` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일시',
   PRIMARY KEY (`id`),
   KEY `A_USER_ROLE_FK` (`user_id`),
-  CONSTRAINT `A_USER_ROLE_FK` FOREIGN KEY (`user_id`) REFERENCES `a_user` (`id`)
+  CONSTRAINT `A_USER_ROLE_FK` FOREIGN KEY (`user_id`) REFERENCES `a_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='사용자_권한'
 
 CREATE TABLE `board_seq` (

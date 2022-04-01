@@ -12,5 +12,8 @@ public interface FileService {
     @Transactional
     List<FileDto> uploadFiles(MultipartFile[] files);
 
+    @Transactional
+    FileDto uploadThumbnail(MultipartFile file);
+
     String getFileUri(String fileName);
 }

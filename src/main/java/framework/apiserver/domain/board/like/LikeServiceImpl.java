@@ -23,8 +23,8 @@ public class LikeServiceImpl implements LikeService{
         String loginId = util.getLoginId();
         ReactiveSetOperations<String, String> operations = redisOperations.opsForSet();
 
-        return operations
-                .members(boardId).filter(member->loginId.equals(member))
+        return operations.members(boardId)
+                .filter(member->loginId.equals(member))
                 .flatMap(s -> Mono.error(new LikeException(loginId + "는 해당 게시물에 이미 좋아요를 눌렀습니다.")))
                 .switchIfEmpty(operations.add(boardId,loginId));
     }
@@ -34,12 +34,10 @@ public class LikeServiceImpl implements LikeService{
         String loginId = util.getLoginId();
         ReactiveSetOperations<String, String> operations = redisOperations.opsForSet();
 
-        Flux<Object> result = operations
-                .members(boardId).filter(member->loginId.equals(member))
+        return operations.members(boardId)
+                .filter(member->loginId.equals(member))
                 .switchIfEmpty(Mono.error(new LikeException("이미 취소 되었습니다.")))
                 .flatMap(s -> operations.remove(boardId,s));
-
-        return result;
     }
 
     @Override
@@ -48,6 +46,6 @@ public class LikeServiceImpl implements LikeService{
 
         return redisOperations.opsForSet().members(boardId)
                 .collectList()
-                .map(list->new LikeDto(boardId, loginId, list.stream().count(), list.contains(loginId)));
+                .map(list -> new LikeDto(boardId, loginId, list.stream().count(), list.contains(loginId)));
     }
 }
