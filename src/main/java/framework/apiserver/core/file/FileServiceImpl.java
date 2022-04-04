@@ -32,6 +32,8 @@ public class FileServiceImpl implements FileService{
     @Value("/api/file/")
     private String IMG_API;
 
+    private String THUMBNAIL_PREFIX ="thumbnail-";
+
     @Override
     public Resource loadFileAsResource(String fileName) {
         Path filePath = fileStorageLocation.resolve(fileName).normalize();
@@ -51,6 +53,10 @@ public class FileServiceImpl implements FileService{
         }
     }
 
+    /**
+     * 파일업로드
+     * @param files
+     */
     @Override
     public List<FileDto> uploadFiles(MultipartFile[] files) {
         List<FileDto> list = new ArrayList<>();
@@ -77,16 +83,6 @@ public class FileServiceImpl implements FileService{
                 Path targetLocation = this.fileStorageLocation.resolve(storedName);
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-                if(!ext.equals(".pdf") && !ext.equals(".tif") && !ext.equals(".tiff") &&
-                        !ext.equals(".xls") && !ext.equals(".xlsx") && !ext.equals(".doc") && !ext.equals(".docx")) {
-                    /*
-                     * create Thumbnail image
-                     * */
-                    Thumbnails.of(new java.io.File(String.valueOf(targetLocation)))
-                            .size(37, 35)
-                            .toFile(new java.io.File(String.valueOf(this.fileStorageLocation.resolve("thumbnail-" +storedName))));
-                }
-
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new FileException("파일 " + fileName + "을 저장할 수 없습니다. 다시 시도해 보세요.");
@@ -105,6 +101,50 @@ public class FileServiceImpl implements FileService{
         }
 
         return list;
+    }
+
+    /**
+     * Thumbnail업로드
+     * @param file
+     */
+    @Override
+    public FileDto uploadThumbnail(MultipartFile file) {
+        String uploadFileName =file.getOriginalFilename();
+        //IE has file path
+        uploadFileName = uploadFileName.substring(uploadFileName.lastIndexOf("\\")+1);
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(uploadFileName));
+        String ext = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+
+        String storedName = String.valueOf(UUID.randomUUID()).concat(ext);
+
+        if(fileName.contains("..")) {
+            throw new FileException("파일명에 허용되지 않는 문자가 포함되어 있습니다." + fileName);
+        }
+
+        if(ext.equals(".pdf") || ext.equals(".tif") || ext.equals(".tiff") ||
+                ext.equals(".xls") || ext.equals(".xlsx") || ext.equals(".doc") || ext.equals(".docx")) {
+            throw new FileException(ext +"형식은 썸네일로 지정할 수 없습니다.");
+        }
+        /*
+         * create Thumbnail image
+         * */
+        try {
+            Path targetLocation = this.fileStorageLocation.resolve(storedName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            Thumbnails.of(new java.io.File(String.valueOf(targetLocation)))
+                    .size(37, 35)
+                    .toFile(new java.io.File(String.valueOf(this.fileStorageLocation.resolve(THUMBNAIL_PREFIX +storedName))));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new FileException("파일 " + fileName + "을 저장할 수 없습니다. 다시 시도해 보세요.");
+        }
+
+        FileDto fileDto = new FileDto();
+        fileDto.setFileName(fileName);
+        fileDto.setThumbNail(THUMBNAIL_PREFIX + storedName);
+        fileDto.setExt(ext);
+        return fileDto;
     }
 
     @Override

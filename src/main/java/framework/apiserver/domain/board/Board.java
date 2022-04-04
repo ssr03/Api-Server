@@ -8,6 +8,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,8 +24,8 @@ public class Board {
             name = "board_seq",
             strategy = "framework.apiserver.core.util.sequenceGenerator.StringDatePrefixSequenceIdGenerator",
             parameters = {
-                    @Parameter(name = StringDatePrefixSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "B"),
-                    @Parameter(name = StringDatePrefixSequenceIdGenerator.DATE_NUMBER_SEPARATOR_PARAMETER, value="-")
+                @Parameter(name = StringDatePrefixSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "B"),
+                @Parameter(name = StringDatePrefixSequenceIdGenerator.DATE_NUMBER_SEPARATOR_PARAMETER, value="-")
             }
     )
     String boardId;
@@ -35,6 +36,10 @@ public class Board {
     @Column(name = "content")
     String content;
 
+    @Column(name = "thumbnail")
+    String thumbnail;
+
+    @NotBlank
     @Column(name = "created_by")
     String createdBy;
 
