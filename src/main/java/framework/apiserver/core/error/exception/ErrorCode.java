@@ -16,6 +16,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C004", "Server Error "),
     INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "C005", "Invalid Type Value "),
     HANDLE_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "C006", "Access is Denied "),
+    HANDLE_AUTHENTICATION(HttpStatus.UNAUTHORIZED,"C007", "검증 실패"),
 
     // FCM
     FCM_INVALID(HttpStatus.BAD_REQUEST, "M001", "FCM IS INVALID"),

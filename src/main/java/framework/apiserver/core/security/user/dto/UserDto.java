@@ -22,4 +22,9 @@ public class UserDto implements Serializable {
     List<String> roles;
     String role;
     String token;
+
+    public UserDto(String loginId, String loginPw){
+        this.loginId = loginId;
+        this.loginPw = loginPw;
+    }
 }
