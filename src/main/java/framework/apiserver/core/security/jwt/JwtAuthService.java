@@ -10,10 +10,10 @@ import javax.transaction.Transactional;
 public interface JwtAuthService {
     @Transactional
     @Modifying
-    ResponseEntity<TokenDto> login(UserDto userDto);
+    TokenDto login(UserDto userDto);
     @Transactional
     @Modifying
-    ResponseEntity<TokenDto> reissue(TokenDto tokenDto);
+    TokenDto reissue(TokenDto tokenDto);
     @Transactional
     @Modifying
     void logout();

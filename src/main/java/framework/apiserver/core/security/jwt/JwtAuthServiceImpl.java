@@ -26,7 +26,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public ResponseEntity<TokenDto> login(UserDto userDto) {
+    public TokenDto login(UserDto userDto) {
         // 1. Login Id/password기반으로 AuthenticationToken생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDto.getLoginId(), userDto.getLoginPw());
 
@@ -45,11 +45,11 @@ public class JwtAuthServiceImpl implements JwtAuthService {
         refreshTokenRepository.save(refreshToken);
         
         //5.토큰 발급
-        return new ResponseEntity<>(tokenDto, HttpStatus.OK);
+        return tokenDto;
     }
 
     @Override
-    public ResponseEntity<TokenDto> reissue(TokenDto tokenDto) {
+    public TokenDto reissue(TokenDto tokenDto) {
         // 1.Refresh Token 검증
         if(!jwtTokenProvider.validateToken(tokenDto.getRefreshToken())){
             throw new JwtTokenInvalidException();
@@ -75,7 +75,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
         refreshTokenRepository.save(newRefreshToken);
 
         // 7.토큰 발급
-        return new ResponseEntity<>(newTokenDto, HttpStatus.OK);
+        return newTokenDto;
     }
 
     @Override

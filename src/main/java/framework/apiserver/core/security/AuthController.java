@@ -27,12 +27,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody UserDto userDto) {
-        return jwtAuthService.login(userDto);
+        TokenDto tokenDto = jwtAuthService.login(userDto);
+        return new ResponseEntity<>(tokenDto, HttpStatus.OK);
     }
 
     @PostMapping("/reissue")
     public ResponseEntity<TokenDto> reissue(@RequestBody TokenDto tokenDto){
-        return jwtAuthService.reissue(tokenDto);
+        TokenDto newTokenDto = jwtAuthService.reissue(tokenDto);
+        return new ResponseEntity<>(newTokenDto,HttpStatus.OK);
     }
 
     @PostMapping("/signup")
