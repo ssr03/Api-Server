@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -70,7 +71,8 @@ public class UserServiceImpl implements UserService{
         responseUser.setAttribute5(user.getAttribute5());
         responseUser.setModifiedBy(loginId);
 
-        if(user.getRoles()!=null)responseUser.setRoles(user.getRoles());
+        Optional.ofNullable(user.getRoles())
+                .ifPresent(roles -> responseUser.setRoles(roles));
 
         userRepository.save(responseUser);
 
